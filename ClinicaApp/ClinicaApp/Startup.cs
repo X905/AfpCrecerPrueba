@@ -1,3 +1,4 @@
+using ClinicaApp.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -26,7 +27,9 @@ namespace ClinicaApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var connectionSection = Configuration.GetSection("ConnectionStrings");
 
+            services.Configure<DbConnection>(connectionSection);
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -49,7 +52,7 @@ namespace ClinicaApp
             app.UseRouting();
 
             app.UseAuthorization();
-
+            app.UseDeveloperExceptionPage();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

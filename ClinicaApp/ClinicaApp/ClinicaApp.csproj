@@ -6,6 +6,15 @@
 
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\Entities\" />
+    <Folder Include="Data\Interfaces\" />
+    <Folder Include="Data\Scripts\" />
+    <Folder Include="Data\Repositories\" />
+    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
@@ -18,19 +19,59 @@ namespace ClinicaApp.Data.Repositories
             this.connectionString = connectionString.Value;
         }
 
-        public void Create(T entity)
+     
+
+        /// <summary>
+        /// Ejecutar procedimientos almacenados con parametros, el diccionario recibe clave "Nombre del parametro" valor "Objeto"
+        /// </summary>
+        /// <param name="keyValuesParams"></param>
+        /// <param name="query"></param>
+        public async Task ExecuteWithParameter(Dictionary<string, object> keyValuesParams, string query)
         {
-            throw new System.NotImplementedException();
+            using (SqlConnection con = new SqlConnection(this.connectionString.ClinicaAFP))
+            {
+                con.Open();
+                SqlCommand sqlCmd = new SqlCommand(query, con);
+                foreach(var keyValueParam in keyValuesParams)
+                {
+                    sqlCmd.Parameters.AddWithValue(keyValueParam.Key, keyValueParam.Value);
+                }
+                sqlCmd.CommandType = CommandType.StoredProcedure;
+                await sqlCmd.ExecuteNonQueryAsync();
+                con.Close();
+            }
+        }
+        /// <summary>
+        /// Ejecuta el procedimiento almacenado para creacion de un registro
+        /// </summary>
+        /// <param name="sqlparam"></param>
+        /// <param name="storedProcedure"></param>
+        /// <returns></returns>
+        public async Task CreateAsync(Dictionary<string, object> sqlparam, string storedProcedure)
+        {
+            await ExecuteWithParameter(sqlparam, storedProcedure);
         }
 
-        public Task CreateAsync(T entity)
+        /// <summary>
+        /// Ejecuta el procedimiento almacenado para la edicion de un registro
+        /// </summary>
+        /// <param name="sqlparam"></param>
+        /// <param name="storedProcedure"></param>
+        /// <returns></returns>
+        public async Task UpdateAsync(Dictionary<string, object> sqlparam, string storedProcedure)
         {
-            throw new System.NotImplementedException();
+            await ExecuteWithParameter(sqlparam, storedProcedure);
         }
 
-        public Task DeleteAsync(T entity)
+        /// <summary>
+        /// Ejecuta el procedimiento almacenado para la eliminacion de un registro
+        /// </summary>
+        /// <param name="sqlparam"></param>
+        /// <param name="storedProcedure"></param>
+        /// <returns></returns>
+        public async Task DeleteAsync(Dictionary<string, object> sqlparam, string storedProcedure)
         {
-            throw new System.NotImplementedException();
+            await ExecuteWithParameter(sqlparam, storedProcedure);
         }
 
 
@@ -83,9 +124,6 @@ namespace ClinicaApp.Data.Repositories
             }
         }
 
-        public Task UpdateAsync(T entity)
-        {
-            throw new System.NotImplementedException();
-        }
+      
     }
 }

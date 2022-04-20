@@ -57,13 +57,30 @@ namespace ClinicaApp.Data.Repositories
                 }
             }
 
-
-
         }
 
-        public Task<T> GetByIdAsync(int id)
+        public async Task<T> GetByIdAsync(string query, int Id, Func<DbDataReader, T> map)
         {
-            throw new System.NotImplementedException();
+            using (SqlConnection command = new SqlConnection(this.connectionString.ClinicaAFP))
+            {
+                using (SqlCommand cmd = new SqlCommand(query + " " + Id))
+                {
+                    cmd.Connection = command;
+                    command.Open();
+                    var entities = new List<T>();
+                    using (SqlDataReader sdr = cmd.ExecuteReader())
+                    {
+
+                        while (sdr.Read())
+                        {
+                            entities.Add(map(sdr));
+                        }
+
+                    }
+                    command.Close();
+                    return entities.FirstOrDefault();
+                }
+            }
         }
 
         public Task UpdateAsync(T entity)

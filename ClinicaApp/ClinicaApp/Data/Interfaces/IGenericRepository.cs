@@ -17,6 +17,6 @@ namespace ClinicaApp.Data.Interfaces
 
         void Create(T entity);
 
-        Task<T> GetByIdAsync(int id);
+        Task<T> GetByIdAsync(string query, int Id, Func<DbDataReader, T> map);
     }
 }

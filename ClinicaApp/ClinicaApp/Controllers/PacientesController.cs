@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
 
 namespace ClinicaApp.Controllers
 {
@@ -73,25 +74,42 @@ namespace ClinicaApp.Controllers
             return pacientes;
         }
 
+        [HttpGet]
+        [Route("GetPaciente")]
+        public async Task<Paciente> Get(int id)
+        {
+            Paciente paciente = new Paciente();
+
+            paciente = await this.pacienteRepository.GetByIdAsync("Execute [dbo].[sp_GetPacienteByID]", id,
+                x => new Paciente
+                {
+                    Nombres = (string)x["Nombres"],
+                    Apellidos = (string)x["Apellidos"],
+                    FechaNacimiento = Convert.ToDateTime(x["FechaNacimiento"]),
+                    Id = Convert.ToInt32(x["Id"])
+                });
+
+            return paciente;
+        }
+
         [HttpPost]
         public void Post([FromBody] Paciente paciente)
         {
-            SqlParameter Nombres = new SqlParameter("@Nombres", paciente.Nombres);
-            SqlParameter Apellidos = new SqlParameter("@Apellidos", paciente.Apellidos);
-            SqlParameter FechaNacimiento = new SqlParameter("@FechaNacimiento", paciente.FechaNacimiento);
+            this.pacienteRepository.Create(paciente);
+        }
 
-            using (SqlConnection con = new SqlConnection(this.connectionString.ClinicaAFP))
-            {
-                con.Open();
+        [HttpPost]
+        [Route("Edit")]
+        public void Edit([FromBody] Paciente paciente)
+        {
+            this.pacienteRepository.Update(paciente);
+        }
 
-                SqlCommand sqlCmd = new SqlCommand("[dbo].[sp_CreatePaciente]", con);
-                sqlCmd.CommandType = CommandType.StoredProcedure;
-                sqlCmd.Parameters.AddWithValue("Nombres", paciente.Nombres);
-                sqlCmd.Parameters.AddWithValue("Apellidos", paciente.Apellidos);
-                sqlCmd.Parameters.AddWithValue("FechaNacimiento", paciente.FechaNacimiento);
-                sqlCmd.ExecuteNonQuery();
-            }
-
+        [HttpDelete]
+        [Route("Delete")]
+        public void Delete(int id)
+        {
+            this.pacienteRepository.Delete(id);
         }
     }
 

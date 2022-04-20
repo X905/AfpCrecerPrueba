@@ -1,8 +1,10 @@
 ﻿using ClinicaApp.Data.Entities;
 using ClinicaApp.Data.Interfaces;
 using Microsoft.Extensions.Options;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
 
 namespace ClinicaApp.Data.Repositories
 {
@@ -15,52 +17,43 @@ namespace ClinicaApp.Data.Repositories
             this.connectionString = connectionString.Value;
         }
 
-        public bool Update(Paciente paciente)
+        async Task<bool> IPacienteRepository.UpdateAsync(Paciente paciente)
         {
-            using (SqlConnection con = new SqlConnection(this.connectionString.ClinicaAFP))
+            Dictionary<string, object> sqlParams = new Dictionary<string, object>()
             {
-                con.Open();
+                { "Id", paciente.Id},
+                { "Nombres", paciente.Nombres},
+                { "Apellidos", paciente.Apellidos},
+                { "FechaNacimiento", paciente.FechaNacimiento}
+            };
 
-                SqlCommand sqlCmd = new SqlCommand("[dbo].[sp_Edit_Pacientes]", con);
-                sqlCmd.CommandType = CommandType.StoredProcedure;
-                sqlCmd.Parameters.AddWithValue("Id", paciente.Id);
-                sqlCmd.Parameters.AddWithValue("Nombres", paciente.Nombres);
-                sqlCmd.Parameters.AddWithValue("Apellidos", paciente.Apellidos);
-                sqlCmd.Parameters.AddWithValue("FechaNacimiento", paciente.FechaNacimiento);
-                sqlCmd.ExecuteNonQuery();
-            }
-
+            await this.UpdateAsync(sqlParams, "[dbo].[sp_Edit_Pacientes]");
             return true;
         }
 
-        bool IPacienteRepository.Create(Paciente paciente)
+        async Task<bool> IPacienteRepository.CreateAsync(Paciente paciente)
         {
-            using (SqlConnection con = new SqlConnection(this.connectionString.ClinicaAFP))
-            {
-                con.Open();
-                SqlCommand sqlCmd = new SqlCommand("[dbo].[sp_CreatePaciente]", con);
-                sqlCmd.CommandType = CommandType.StoredProcedure;
-                sqlCmd.Parameters.AddWithValue("Nombres", paciente.Nombres);
-                sqlCmd.Parameters.AddWithValue("Apellidos", paciente.Apellidos);
-                sqlCmd.Parameters.AddWithValue("FechaNacimiento", paciente.FechaNacimiento);
-                sqlCmd.ExecuteNonQuery();
-            }
 
+            Dictionary<string, object> sqlParams = new Dictionary<string, object>()
+            {
+                { "Nombres", paciente.Nombres},
+                { "Apellidos", paciente.Apellidos},
+                { "FechaNacimiento", paciente.FechaNacimiento}
+            };
+
+            await this.CreateAsync(sqlParams, "[dbo].[sp_CreatePaciente]");
             return true;
         }
-        
-        bool IPacienteRepository.Delete(int id)
-        {
-            using (SqlConnection con = new SqlConnection(this.connectionString.ClinicaAFP))
-            {
-                con.Open();
-                SqlCommand sqlCmd = new SqlCommand("[dbo].[sp_DeletePaciente]", con);
-                sqlCmd.CommandType = CommandType.StoredProcedure;
-                sqlCmd.Parameters.AddWithValue("Id", id);
-                sqlCmd.ExecuteNonQuery();
-            }
 
+        async Task<bool> IPacienteRepository.DeleteAsync(int id)
+        {
+            Dictionary<string, object> sqlParams = new Dictionary<string, object>()
+            {
+                { "Id", id}
+            };
+            await this.DeleteAsync(sqlParams, "[dbo].[sp_DeletePaciente]");
             return true;
         }
+            
     }
 }

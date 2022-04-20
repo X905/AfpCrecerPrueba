@@ -95,21 +95,21 @@ namespace ClinicaApp.Controllers
         [HttpPost]
         public void Post([FromBody] Paciente paciente)
         {
-            this.pacienteRepository.Create(paciente);
+            this.pacienteRepository.CreateAsync(paciente);
         }
 
         [HttpPost]
         [Route("Edit")]
         public void Edit([FromBody] Paciente paciente)
         {
-            this.pacienteRepository.Update(paciente);
+            this.pacienteRepository.UpdateAsync(paciente);
         }
 
         [HttpDelete]
         [Route("Delete")]
         public void Delete(int id)
         {
-            this.pacienteRepository.Delete(id);
+            this.pacienteRepository.DeleteAsync(id);
         }
     }
 

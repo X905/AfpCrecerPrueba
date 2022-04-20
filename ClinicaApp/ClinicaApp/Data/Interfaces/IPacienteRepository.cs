@@ -1,12 +1,13 @@
 ﻿using ClinicaApp.Data.Entities;
+using System.Threading.Tasks;
 
 namespace ClinicaApp.Data.Interfaces
 {
     public interface IPacienteRepository: IGenericRepository<Paciente>
     {
-        bool Create(Paciente paciente);
+        Task<bool> CreateAsync(Paciente paciente);
 
-        bool Update(Paciente paciente);
-        bool Delete(int id);
+        Task<bool> UpdateAsync(Paciente paciente);
+        Task<bool> DeleteAsync(int id);
     }
 }

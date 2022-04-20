@@ -1,4 +1,6 @@
 using ClinicaApp.Data;
+using ClinicaApp.Data.Interfaces;
+using ClinicaApp.Data.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -31,6 +33,9 @@ namespace ClinicaApp
 
             services.Configure<DbConnection>(connectionSection);
             services.AddControllers();
+
+            services.AddScoped<IPacienteRepository, PacienteRepository>();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ClinicaApp", Version = "v1" });

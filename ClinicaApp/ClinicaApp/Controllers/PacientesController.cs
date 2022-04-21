@@ -1,14 +1,11 @@
 ﻿using ClinicaApp.Data;
 using ClinicaApp.Data.Entities;
 using ClinicaApp.Data.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace ClinicaApp.Controllers
 {
@@ -23,38 +20,6 @@ namespace ClinicaApp.Controllers
         {
             this.connectionString = connectionString.Value;
             this.pacienteRepository = pacienteRepository;
-        }
-
-        [HttpGet]
-        [Route("Test")]
-        public List<Paciente> GetPacientes()
-        {
-            List<Paciente> pacientes = new List<Paciente>();
-            using (SqlConnection con = new SqlConnection(this.connectionString.ClinicaAFP))
-            {
-
-                string query = "EXECUTE [GetPacientes]";
-                using (SqlCommand cmd = new SqlCommand(query))
-                {
-                    cmd.Connection = con;
-                    con.Open();
-                    using (SqlDataReader sdr = cmd.ExecuteReader())
-                    {
-                        while (sdr.Read())
-                        {
-                            pacientes.Add(new Paciente
-                            {
-                                Nombres = sdr["Nombres"].ToString(),
-                                Apellidos = sdr["Apellidos"].ToString(),
-                                FechaNacimiento = Convert.ToDateTime(sdr["FechaNacimiento"].ToString()),
-                                Id = Convert.ToInt32(sdr["Id"])
-                            });
-                        }
-                    }
-                    con.Close();
-                }
-            }
-            return pacientes;
         }
 
         [HttpGet]
@@ -93,6 +58,7 @@ namespace ClinicaApp.Controllers
         }
 
         [HttpPost]
+        [Route("Create")]
         public void Post([FromBody] Paciente paciente)
         {
             this.pacienteRepository.CreateAsync(paciente);
